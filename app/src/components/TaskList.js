@@ -5,14 +5,33 @@ import TodoItem from './TodoItem';
 const TaskList = ({ displayList, handleComplete }) => {
   const [sortType, setSortType] = useState('all');
   const [list, setList] = useState([]);
+  const [display, setDisplay] = useState([]);
 
-  console.log(displayList);
+  console.log(sortType);
 
   useEffect(() => {
     if(displayList != null) {
       setList(displayList.filter((item) => item.complete === false ));
     }
   }, [displayList]);
+
+  async function handleSortDisplayList(type) {
+    if(sortType === 'all') {
+      await setDisplay(type.filter((item) => item.complete === false ));
+    } else if(sortType === 'important') {
+      await setDisplay(type.filter((item) => item.complete === false && item.type === 'important'));
+    } else if(sortType === 'urgent') {
+      await setDisplay(type.filter((item) => item.complete === false && item.type === 'urgent'));
+    }
+  }
+
+  useEffect(() => { 
+    console.log(sortType);
+    console.log(list);
+    handleSortDisplayList(list);
+  }, [sortType, list]);
+
+  console.log(display);
 
   const sortButtonStyle = (buttonType) => ({
     marginRight: '10px', 
@@ -31,8 +50,7 @@ const TaskList = ({ displayList, handleComplete }) => {
         <button onClick={() => setSortType('all')} style={sortButtonStyle('all')}>All</button>
         <button onClick={() => setSortType('important')} style={sortButtonStyle('important')}>Important</button>
         <button onClick={() => setSortType('urgent')} style={sortButtonStyle('urgent')}>Urgent</button>
-        {list ? list.map((item, index) => {
-          console.log(item);
+        {display ? display.map((item, index) => {
           return (
             <TodoItem 
               key={index}
